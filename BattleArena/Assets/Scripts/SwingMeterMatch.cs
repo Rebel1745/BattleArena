@@ -3,60 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SwingMeterMatch : MonoBehaviour {
-
-    public Slider swingMeter;
-    // Image to compare colour of stopping point pixel to
-    public Texture2D meterImage;
-
-    public GameObject sourceUnit;
-    public GameObject targetUnit;
-
-    private bool isSwinging = false;
-
-    // default speed of the swing meter
-    public float meterSpeed = 20f;
-
-    // Text to populate with list of keys
-    public Text keysToPressText;
-    // panel containing keysToPressText
-    public Transform keysToPressPanel;
-    // Define a color for the keysToPress panels so they can be reverted after they change to the color corresponding to the stopping color
-    public Color panelColor;
-
-    public bool keysToPressRandom = false;
+public class SwingMeterMatch : SwingMeter {
+    
     // number of keys to press per wave
     public int noOfKeys = 3;
     public int noOfWaves = 3;
-    // list of all the keys to press
-    public string[] keysToPress;
     // list of keys to press this wave
     private string[] keysToPressWave;
-    // for randomised key presses, a list of the keys to choose from
-    public string[] possibleKeys;
-
+    
     // number of keys pressed so far
     private int keyPressNo = 0;
     // number of waves so far
     private int waveNo = 0;
-
-    private string keyPressed = "";
-
-    // Use this for initialization
-    void Start () {
-        // initials the keys to press for this wave using the number of keys per wave
-        keysToPressWave = new string[noOfKeys];
-        // if the list of keys we want to press doesnt add up to the total number of waves * keys per wave; randomise it all
-        if(keysToPress.Length != noOfKeys * noOfWaves)
-        {
-            keysToPress = new string[noOfKeys*noOfWaves];
-            keysToPressRandom = true;
-            Debug.Log("Not enough strings in the keysToPress array.  Reinitialising with random values");
-        }
-        initialiseKeys();
-        sourceUnit = TurnManager.instance.GetUnitInPlay();
-        targetUnit = TurnManager.instance.GetTargetUnit();
-    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -112,7 +70,7 @@ public class SwingMeterMatch : MonoBehaviour {
         {
             // Check the color of the image corresponding with the position on the image the swing meter stopped on
             Color stoppingColor = GetColorAtStoppingPoint(swingMeter.value);
-            string hitType = CheckHitType(stoppingColor, keysToPressPanel, missed);
+            string hitType = CheckHitType(stoppingColor, keysToPressPanels[0], missed);
 
             // calculate the damage using the stats of the source unit
             int damage = sourceUnit.GetComponent<Unit>().CalculateDamage(sourceUnit, hitType);
@@ -155,24 +113,19 @@ public class SwingMeterMatch : MonoBehaviour {
         return textToAdd;
     }
 
-    float GetXPixelFromSwingMeterValue(float meterValue)
+    public override void InitialiseKeys()
     {
-        // Returns the pixel corresponding to the position of the swing meter click
-        return (meterValue / 100f) * meterImage.width;
-    }
 
-    // returns the colour in the background image corresponding to the point the swing meter stopped
-    Color GetColorAtStoppingPoint(float xPos)
-    {
-        float xPixel = GetXPixelFromSwingMeterValue(xPos);
+        // initials the keys to press for this wave using the number of keys per wave
+        keysToPressWave = new string[noOfKeys];
+        // if the list of keys we want to press doesnt add up to the total number of waves * keys per wave; randomise it all
+        if (keysToPress.Length != noOfKeys * noOfWaves)
+        {
+            keysToPress = new string[noOfKeys * noOfWaves];
+            keysToPressRandom = true;
+            Debug.Log("Not enough strings in the keysToPress array.  Reinitialising with random values");
+        }
 
-        Color pixelColor = meterImage.GetPixel(Mathf.RoundToInt(xPixel), 0);
-
-        return pixelColor;
-    }
-
-    void initialiseKeys()
-    {
         keyPressNo = 0;
         waveNo = 0;
 
@@ -202,7 +155,7 @@ public class SwingMeterMatch : MonoBehaviour {
         GetNextWaveOfKeys();
 
         // set / reset the colour of the panel
-        keysToPressPanel.gameObject.GetComponent<Image>().color = panelColor;
+        keysToPressPanels[0].gameObject.GetComponent<Image>().color = panelColor;
     }
 
     void GetNextWaveOfKeys()
@@ -212,22 +165,16 @@ public class SwingMeterMatch : MonoBehaviour {
             keysToPressWave[i] = keysToPress[keyPressNo + i];
         }
 
-        keysToPressText.text = "";
+        keysToPressText[0].text = "";
         string keyText = "";
         // Display the keysToPress in the correct text fields
         for (int i = 0; i < keysToPressWave.Length; i++)
         {
             keyText = keysToPressWave[i].ToUpper();
-            keysToPressText.text += keyText + "  ";
+            keysToPressText[0].text += keyText + "  ";
         }
-        keysToPressText.text = keysToPressText.text.Trim();
+        keysToPressText[0].text = keysToPressText[0].text.Trim();
 
         waveNo++;
-    }
-
-    public void Close()
-    {
-        MoveListController mlc = FindObjectOfType<MoveListController>();
-        mlc.Cancel();
     }
 }

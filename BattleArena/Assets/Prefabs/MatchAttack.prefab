@@ -458,19 +458,33 @@ MonoBehaviour:
   meterImage: {fileID: 2800000, guid: 7ca088c13f09148418ec4ea700b84bf4, type: 3}
   sourceUnit: {fileID: 0}
   targetUnit: {fileID: 0}
+  isSwinging: 0
+  canPress: 1
+  pressAgainThreshold: 0
+  nextPressThreshold: 0
   meterSpeed: 10
-  keysToPressText: {fileID: 114084604734902008}
-  keysToPressPanel: {fileID: 224278473543682800}
-  panelColor: {r: 0, g: 0, b: 0, a: 0.39215687}
+  noOfSwings: 0
+  swingNo: 0
   keysToPressRandom: 1
-  noOfKeys: 3
-  noOfWaves: 3
   keysToPress: []
   possibleKeys:
   - 1
   - 2
   - 3
   - 4
+  panelColor: {r: 0, g: 0, b: 0, a: 0.39215687}
+  keyPressed: 
+  keysToPressText:
+  - {fileID: 114084604734902008}
+  keysToPressPanels:
+  - {fileID: 224278473543682800}
+  keysToPressPanelSpawns:
+  - {fileID: 224876328978371686}
+  currentPanel: {fileID: 0}
+  currentPanelSpawn: {fileID: 0}
+  keysToPressPanel: {fileID: 224278473543682800}
+  noOfKeys: 3
+  noOfWaves: 3
 --- !u!222 &222477180295326060
 CanvasRenderer:
   m_ObjectHideFlags: 1

@@ -3,42 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SwingMeterAlternate : MonoBehaviour {
+public class SwingMeterAlternate : SwingMeter {
 
-    public Slider swingMeter;
-    // Image to compare colour of stopping point pixel to
-    public Texture2D meterImage;
-
-    public GameObject sourceUnit;
-    public GameObject targetUnit;
-
-    private bool isSwinging = false;
-
-    // default speed of the swing meter
-    public float meterSpeed = 20f;
-
-    // Text to populate with list of keys
-    public Text keysToPressText;
-    // panel containing keysToPressText
-    public Transform keysToPressPanel;
-    // Define spawn point for the keysToPressPanel
-    public Transform keysToPressPanelSpawn;
     // Define max position for keysToPressPanel
     public Transform keysToPressPanelMax;
     // Define a color for the keysToPress panels so they can be reverted after they change to the color corresponding to the stopping color
-    public Color panelColor;
-
-    public bool keysToPressRandom = false;
     private int noOfKeys = 2;
     // list of all the keys to press
-    public string[] keysToPress;
     private string currentKeyToPress;
     private int currentKeyToPressIndex = 0;
-    // for randomised key presses, a list of the keys to choose from
-    public string[] possibleKeys;
-
-    private string keyPressed = "";
-
     // Define the number that will be added to on successful button press
     public float mashNo = 0f;
     // Number to add per successful button press
@@ -47,14 +20,6 @@ public class SwingMeterAlternate : MonoBehaviour {
     public float maxMashNo = 100f;
     // Speed mashNo decreases if no keys are pressed
     public float mashDepreciation = 5f;
-
-    // Use this for initialization
-    void Start ()
-    {
-        initialiseKeys();
-        sourceUnit = TurnManager.instance.GetUnitInPlay();
-        targetUnit = TurnManager.instance.GetTargetUnit();
-    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -85,13 +50,13 @@ public class SwingMeterAlternate : MonoBehaviour {
 
             // set the color of the keysToPressPanel to the same as the current mashNo placement on the slider
             Color currentMashNoColor = GetColorAtStoppingPoint(mashNo);
-            keysToPressPanel.gameObject.GetComponent<Image>().color = currentMashNoColor;
+            keysToPressPanels[0].gameObject.GetComponent<Image>().color = currentMashNoColor;
 
             // move the keysToPressPanel to correspond with the mashNo
             Vector3 newPos = new Vector3(GetXPixelFromSwingMeterValue(mashNo), 0, 0);
-            newPos = keysToPressPanelSpawn.position + newPos;
+            newPos = keysToPressPanelSpawns[0].position + newPos;
             newPos.x = Mathf.Clamp(newPos.x, 0, keysToPressPanelMax.position.x);
-            keysToPressPanel.position = newPos;
+            keysToPressPanels[0].position = newPos;
 
             // If the meter gets to 100, swing is complete
             if (swingMeter.value >= swingMeter.maxValue)
@@ -150,23 +115,7 @@ public class SwingMeterAlternate : MonoBehaviour {
         return textToAdd;
     }
 
-    float GetXPixelFromSwingMeterValue(float meterValue)
-    {
-        // Returns the pixel corresponding to the position of the swing meter click
-        return (meterValue / 100f) * meterImage.width;
-    }
-
-    // returns the colour in the background image corresponding to the point the swing meter stopped
-    Color GetColorAtStoppingPoint(float xPos)
-    {
-        float xPixel = GetXPixelFromSwingMeterValue(xPos);
-
-        Color pixelColor = meterImage.GetPixel(Mathf.RoundToInt(xPixel), 0);
-
-        return pixelColor;
-    }
-
-    void initialiseKeys()
+    public override void InitialiseKeys()
     {
         mashNo = 0;
 
@@ -206,17 +155,11 @@ public class SwingMeterAlternate : MonoBehaviour {
             }
         }
 
-        keysToPressText.text = keysToPress[0] + " + " + keysToPress[1];
+        keysToPressText[0].text = keysToPress[0] + " + " + keysToPress[1];
 
-        keysToPressPanel.position = keysToPressPanelSpawn.position;
-        keysToPressPanel.gameObject.GetComponent<Image>().color = panelColor;
+        keysToPressPanels[0].position = keysToPressPanelSpawns[0].position;
+        keysToPressPanels[0].gameObject.GetComponent<Image>().color = panelColor;
 
         currentKeyToPress = keysToPress[currentKeyToPressIndex];
-    }
-
-    public void Close()
-    {
-        MoveListController mlc = FindObjectOfType<MoveListController>();
-        mlc.Cancel();
     }
 }
