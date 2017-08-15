@@ -115,47 +115,32 @@ public class SwingMeterMatch : SwingMeter {
 
     public override void InitialiseKeys()
     {
-
+        base.InitialiseKeys();
         // initials the keys to press for this wave using the number of keys per wave
         keysToPressWave = new string[noOfKeys];
+
         // if the list of keys we want to press doesnt add up to the total number of waves * keys per wave; randomise it all
         if (keysToPress.Length != noOfKeys * noOfWaves)
         {
-            keysToPress = new string[noOfKeys * noOfWaves];
-            keysToPressRandom = true;
-            Debug.Log("Not enough strings in the keysToPress array.  Reinitialising with random values");
+            RandomiseKeys();
         }
 
         keyPressNo = 0;
         waveNo = 0;
 
-        // check to make sure possibleKeys is not null - if it is add 1,2,3 and 4 as options
-        if (possibleKeys == null || possibleKeys.Length == 0)
-        {
-            possibleKeys = new string[4];
-            possibleKeys[0] = "1";
-            possibleKeys[1] = "2";
-            possibleKeys[2] = "3";
-            possibleKeys[3] = "4";
-        }
-
-        // if the keysToPress is going to be random, pick from the possibleKeys as many times as needed
-        if (keysToPressRandom)
-        {
-            keysToPress = new string[noOfKeys * noOfWaves];
-            int x = 0;
-            for (int i = 0; i < noOfKeys * noOfWaves; i++)
-            {                
-                x = Random.Range(0, possibleKeys.Length);
-                keysToPress[i] = possibleKeys[x];                
-            }
-        }
-
         // Load first wave of keysToPress
         GetNextWaveOfKeys();
+    }
 
-        // set / reset the colour of the panel
-        keysToPressPanels[0].gameObject.GetComponent<Image>().color = panelColor;
+    public override void RandomiseKeys()
+    {
+        keysToPress = new string[noOfKeys * noOfWaves];
+        int x = 0;
+        for (int i = 0; i < noOfKeys * noOfWaves; i++)
+        {
+            x = Random.Range(0, possibleKeys.Length);
+            keysToPress[i] = possibleKeys[x];
+        }
     }
 
     void GetNextWaveOfKeys()

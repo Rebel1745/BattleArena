@@ -117,49 +117,37 @@ public class SwingMeterAlternate : SwingMeter {
 
     public override void InitialiseKeys()
     {
+        base.InitialiseKeys();
+
         mashNo = 0;
-
-        // check to make sure possibleKeys is not null - if it is add 1,2,3 and 4 as options
-        if (possibleKeys == null || possibleKeys.Length == 0)
-        {
-            possibleKeys = new string[4];
-            possibleKeys[0] = "1";
-            possibleKeys[1] = "2";
-            possibleKeys[2] = "3";
-            possibleKeys[3] = "4";
-        }
-
-        // if the keysToPress is going to be random, pick from the possibleKeys as many times as needed
-        if (keysToPressRandom)
-        {
-            keysToPress = new string[noOfKeys];
-            int x = 0;
-            for (int i = 0; i < noOfKeys; i++)
-            {
-                x = Random.Range(0, possibleKeys.Length);
-                if (i == 1)
-                {
-                    if (possibleKeys[x] != keysToPress[0])
-                    {
-                        keysToPress[i] = possibleKeys[x];
-                    }
-                    else
-                    {
-                        i--;
-                    }
-                }
-                else
-                {
-                    keysToPress[i] = possibleKeys[x];
-                }
-            }
-        }
 
         keysToPressText[0].text = keysToPress[0] + " + " + keysToPress[1];
 
-        keysToPressPanels[0].position = keysToPressPanelSpawns[0].position;
-        keysToPressPanels[0].gameObject.GetComponent<Image>().color = panelColor;
-
         currentKeyToPress = keysToPress[currentKeyToPressIndex];
+    }
+
+    public override void RandomiseKeys()
+    {
+        keysToPress = new string[noOfKeys];
+        int x = 0;
+        for (int i = 0; i < noOfKeys; i++)
+        {
+            x = Random.Range(0, possibleKeys.Length);
+            if (i == 1)
+            {
+                if (possibleKeys[x] != keysToPress[0])
+                {
+                    keysToPress[i] = possibleKeys[x];
+                }
+                else
+                {
+                    i--;
+                }
+            }
+            else
+            {
+                keysToPress[i] = possibleKeys[x];
+            }
+        }
     }
 }

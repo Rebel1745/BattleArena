@@ -27,7 +27,7 @@ public class SwingMeterCombo : SwingMeter {
             swingMeter.value += meterSpeed * Time.deltaTime;
 
             // If the meter gets to 100 without the final required key being pressed, return a miss
-            if (swingMeter.value >= swingMeter.maxValue)
+            if (swingMeter.value >= swingMeter.maxValue  || (canPress && swingMeter.value >= nextPressThreshold))
             {
                 swingNo = 0;
                 StopSwinging(true);
@@ -53,55 +53,32 @@ public class SwingMeterCombo : SwingMeter {
 
     public override void InitialiseKeys()
     {
-        canPress = true;
-        //resultText.text = "";
+        base.InitialiseKeys();
 
         // calculate threshold for next swing (i.e corresponding swingMeter.value)
         pressAgainThreshold = (1f / (float)noOfSwings) * 100f;
         nextPressThreshold = pressAgainThreshold;
 
-        // check to make sure possibleKeys is not null - if it is add 1,2,3 and 4 as options
-        if (possibleKeys == null || possibleKeys.Length == 0)
-        {
-            possibleKeys = new string[4];
-            possibleKeys[0] = "1";
-            possibleKeys[1] = "2";
-            possibleKeys[2] = "3";
-            possibleKeys[3] = "4";
-        }
-
-        // if the keysToPress is going to be random, pick from the possibleKeys as many times as needed
-        if (keysToPressRandom)
-        {
-            keysToPress = new string[noOfSwings];
-            for (int i = 0; i < noOfSwings; i++)
-            {
-                int x = Random.Range(0, possibleKeys.Length);
-                keysToPress[i] = possibleKeys[x];
-            }
-        }
-
-        // Place the keysToPressPanels in the positions dictated by keysToPressPanelSpawns
-        for (int i = 0; i < keysToPressPanels.Length; i++)
-        {
-            keysToPressPanels[i].position = keysToPressPanelSpawns[i].position;
-            keysToPressPanels[i].gameObject.GetComponent<Image>().color = panelColor;
-        }
-
         // Display the keysToPress in the correct text fields
         for (int i = 0; i < keysToPressText.Length; i++)
         {
             string keyText = keysToPress[i].ToUpper();
-            if (keyText == " ")
-            {
-                keyText = "SPACE";
-            }
             keysToPressText[i].text = keyText;
         }
 
         // set up the panel to start following the swingMeter.value
         currentPanel = keysToPressPanels[0];
         currentPanelSpawn = keysToPressPanelSpawns[0];
+    }
+
+    public override void RandomiseKeys()
+    {
+        keysToPress = new string[noOfSwings];
+        for (int i = 0; i < noOfSwings; i++)
+        {
+            int x = Random.Range(0, possibleKeys.Length);
+            keysToPress[i] = possibleKeys[x];
+        }
     }
 
     void StopSwinging(bool missed)
@@ -197,16 +174,8 @@ public class SwingMeterCombo : SwingMeter {
         }
         else
         {
+            panel.gameObject.GetComponent<Image>().color = Color.black;
             textToAdd = "miss";
-        }
-
-        if(swingNo == 1)
-        {
-            //resultText.text = textToAdd;
-        }
-        else
-        {
-            //resultText.text += "\n" + textToAdd;
         }
 
         return textToAdd;

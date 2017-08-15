@@ -8,9 +8,9 @@ public class EnemyUnit : MonoBehaviour {
     {
         // Set flag in GameManager for tiles to no longer be clickable
         TurnManager.instance.SetTileClickability(false);
-        Debug.Log("Clicked Enemy");
-        // Find out which unit initiated click (use a game manager to track the current focused object - which units turn it is)
+        // Find out which unit initiated click
         GameObject currentUnit = TurnManager.instance.GetUnitInPlay();
+        // set the target unit (this unit that was clicked on)
         TurnManager.instance.SetTargetUnit(transform.parent.gameObject);
         // show the list of attacks this unit can perform
         currentUnit.GetComponent<PlayerUnit>().ShowMoveList();

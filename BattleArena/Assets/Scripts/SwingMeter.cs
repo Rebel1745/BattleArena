@@ -41,13 +41,43 @@ public class SwingMeter : MonoBehaviour {
     public Transform currentPanelSpawn;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         InitialiseKeys();
         sourceUnit = TurnManager.instance.GetUnitInPlay();
         targetUnit = TurnManager.instance.GetTargetUnit();
     }
 
-    public virtual void InitialiseKeys(){}
+    // virtual functions
+    public virtual void InitialiseKeys()
+    {
+        canPress = true;
+        // check to make sure possibleKeys is not null - if it is add 1,2,3 and 4 as options
+        if (possibleKeys == null || possibleKeys.Length == 0)
+        {
+            possibleKeys = new string[4];
+            possibleKeys[0] = "1";
+            possibleKeys[1] = "2";
+            possibleKeys[2] = "3";
+            possibleKeys[3] = "4";
+        }
+
+        // if the keysToPress is going to be random, pick from the possibleKeys as many times as needed
+        if (keysToPressRandom)
+        {
+            RandomiseKeys();
+        }
+
+        // Place the keysToPressPanels in the positions dictated by keysToPressPanelSpawns
+        for (int i = 0; i < keysToPressPanels.Length; i++)
+        {
+            keysToPressPanels[i].position = keysToPressPanelSpawns[i].position;
+            keysToPressPanels[i].gameObject.GetComponent<Image>().color = panelColor;
+        }
+    }
+
+    public virtual void RandomiseKeys() { }
+    // end virtual functions
 
     public float GetXPixelFromSwingMeterValue(float meterValue)
     {
