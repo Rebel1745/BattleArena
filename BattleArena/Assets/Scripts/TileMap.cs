@@ -12,15 +12,28 @@ public class TileMap : MonoBehaviour {
     int[,] tiles;
     Node[,] graph;
 
-    int mapSizeX = 10;
-    int mapSizeY = 10;
+    int mapSizeX = 20;
+    int mapSizeY = 20;
 
     void Start()
     {
+        if (selectedUnit == null)
+        {
+            GameObject[] gos = GameObject.FindGameObjectsWithTag("Player");
+            if (gos != null)
+                selectedUnit = gos[0];
+            else
+                Debug.LogError("NO PLAYER IN THE SCENE");
+        }
         // Sort selected unit variables
         selectedUnit.GetComponent<Unit>().tileX = (int)selectedUnit.transform.position.x;
         selectedUnit.GetComponent<Unit>().tileY = (int)selectedUnit.transform.position.y;
         selectedUnit.GetComponent<Unit>().map = this;
+        GenerateMap();
+    }
+
+    public void GenerateMap()
+    {
         // allocate our map tiles
         GenerateMapData();
         GeneratePathfindingGraph();
@@ -36,6 +49,7 @@ public class TileMap : MonoBehaviour {
             {
                 TileType tt = tileTypes[tiles[x, y]];
                 GameObject go = (GameObject)Instantiate(tt.tileVisualPrefab, new Vector3(x, y, 0), Quaternion.identity, this.transform);
+                go.name = tt.name + " " + x + ", " + y;
                 ClickableTile ct = go.GetComponent<ClickableTile>();
                 ct.tileX = x;
                 ct.tileY = y;

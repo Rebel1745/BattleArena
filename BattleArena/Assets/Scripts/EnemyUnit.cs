@@ -10,6 +10,7 @@ public class EnemyUnit : MonoBehaviour {
         TurnManager.instance.SetTileClickability(false);
         // Find out which unit initiated click
         GameObject currentUnit = TurnManager.instance.GetUnitInPlay();
+        currentUnit.GetComponent<Unit>().currentPath = null;
         // set the target unit (this unit that was clicked on)
         TurnManager.instance.SetTargetUnit(transform.parent.gameObject);
         // show the list of attacks this unit can perform
