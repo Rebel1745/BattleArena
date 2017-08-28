@@ -15,7 +15,7 @@ public class Unit : MonoBehaviour {
 
     public TileMap map;
 
-    public List<Node> currentPath = null;
+    public List<Tile> currentPath = null;
 
     int moveSpeed = 2;
 
@@ -23,17 +23,17 @@ public class Unit : MonoBehaviour {
     {
         if(currentPath != null)
         {
-            int currNode = 0;
+            int currTile = 0;
 
-            while(currNode < currentPath.Count - 1)
+            while(currTile < currentPath.Count - 1)
             {
                 Vector3 offset = new Vector3(0, 0, -0.75f);
-                Vector3 start = map.TileCoordToWorldCoord(currentPath[currNode].x, currentPath[currNode].y) + offset;
-                Vector3 end = map.TileCoordToWorldCoord(currentPath[currNode+1].x, currentPath[currNode+1].y) + offset;
+                Vector3 start = map.TileCoordToWorldCoord(currentPath[currTile].X, currentPath[currTile].Y) + offset;
+                Vector3 end = map.TileCoordToWorldCoord(currentPath[currTile + 1].X, currentPath[currTile + 1].Y) + offset;
 
                 Debug.DrawLine(start, end, Color.red);
 
-                currNode++;
+                currTile++;
             }
         }
     }
@@ -50,11 +50,11 @@ public class Unit : MonoBehaviour {
             }
 
             // Get cost from current tile to next tile
-            remainingMovement -= map.CostToEnterTile(currentPath[1].x, currentPath[1].y);
+            remainingMovement -= map.CostToEnterTile(currentPath[1].X, currentPath[1].Y);
 
             // move us to the next tile in the sequence
-            tileX = currentPath[1].x;
-            tileY = currentPath[1].y;
+            tileX = currentPath[1].X;
+            tileY = currentPath[1].Y;
             transform.position = map.TileCoordToWorldCoord(tileX, tileY);
 
             // Remove the old "current" tile

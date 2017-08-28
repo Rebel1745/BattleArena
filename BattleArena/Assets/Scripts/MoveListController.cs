@@ -9,10 +9,6 @@ public class MoveListController : MonoBehaviour {
 
     void Start()
     {
-        if(parent == null)
-        {
-            parent = FindObjectOfType<Canvas>().transform;
-        }
     }
 
     public void DoMove(GameObject prefab)
@@ -25,6 +21,7 @@ public class MoveListController : MonoBehaviour {
             Destroy(go);
         }
         GameObject moveGO = (GameObject)Instantiate(prefab, parent);
+        //gameObject.SetActive(false);
     }
 
     public void Cancel()
@@ -41,6 +38,8 @@ public class MoveListController : MonoBehaviour {
         }
 
         // remove move list
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        if(gameObject.activeInHierarchy)
+            gameObject.SetActive(false);
     }
 }

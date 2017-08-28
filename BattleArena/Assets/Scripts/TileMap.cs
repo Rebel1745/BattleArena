@@ -7,17 +7,20 @@ public class TileMap : MonoBehaviour {
 
     public GameObject selectedUnit;
 
+    public GameObject unitPlayerPrefab;
+    public GameObject unitEnemyPrefab;
+
     public TileType[] tileTypes;
 
     int[,] tiles;
-    Node[,] graph;
+    Tile[,] graph;
 
     int mapSizeX = 20;
     int mapSizeY = 20;
 
     void Start()
     {
-        if (selectedUnit == null)
+        /*if (selectedUnit == null)
         {
             GameObject[] gos = GameObject.FindGameObjectsWithTag("Player");
             if (gos != null)
@@ -28,8 +31,18 @@ public class TileMap : MonoBehaviour {
         // Sort selected unit variables
         selectedUnit.GetComponent<Unit>().tileX = (int)selectedUnit.transform.position.x;
         selectedUnit.GetComponent<Unit>().tileY = (int)selectedUnit.transform.position.y;
-        selectedUnit.GetComponent<Unit>().map = this;
+        selectedUnit.GetComponent<Unit>().map = this;*/
         GenerateMap();
+    }
+
+    public void SpawnUnitAt(GameObject unitPrefab, int x, int y)
+    {
+        GameObject unitGO = (GameObject)Instantiate(unitPrefab, new Vector3(x, y, 0), Quaternion.identity);
+        // THIS IS ALL TEMPORARY (I HOPE)
+        selectedUnit = unitGO;
+        selectedUnit.GetComponent<Unit>().tileX = (int)selectedUnit.transform.position.x;
+        selectedUnit.GetComponent<Unit>().tileY = (int)selectedUnit.transform.position.y;
+        selectedUnit.GetComponent<Unit>().map = this;
     }
 
     public void GenerateMap()
@@ -39,6 +52,8 @@ public class TileMap : MonoBehaviour {
         GeneratePathfindingGraph();
         // now spawn visual prefabs
         GenerateMapVisuals();
+        SpawnUnitAt(unitEnemyPrefab, 6, 5);
+        SpawnUnitAt(unitPlayerPrefab, 5, 5);
     }
 
     void GenerateMapVisuals()
@@ -116,21 +131,21 @@ public class TileMap : MonoBehaviour {
             return;
         }
 
-        Dictionary <Node, float> dist = new Dictionary<Node, float>();
-        Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
+        Dictionary <Tile, float> dist = new Dictionary<Tile, float>();
+        Dictionary<Tile, Tile> prev = new Dictionary<Tile, Tile>();
 
-        List<Node> unvisited = new List<Node>();
+        List<Tile> unvisited = new List<Tile>();
 
         // find the initial node
-        Node source = graph[selectedUnit.GetComponent<Unit>().tileX, selectedUnit.GetComponent<Unit>().tileY];
-        Node target = graph[x, y];
+        Tile source = graph[selectedUnit.GetComponent<Unit>().tileX, selectedUnit.GetComponent<Unit>().tileY];
+        Tile target = graph[x, y];
         // source is 0 distance from itself
         dist[source] = 0;
         // there is nothing before the source
         prev[source] = null;
 
         // initialise everything to have INFINITY distance (until we know the truth)
-        foreach(Node v in graph)
+        foreach(Tile v in graph)
         {
             if(v != source)
             {
@@ -143,9 +158,9 @@ public class TileMap : MonoBehaviour {
 
         while(unvisited.Count > 0)
         {
-            Node u = null;
+            Tile u = null;
 
-            foreach(Node possibleU in unvisited)
+            foreach(Tile possibleU in unvisited)
             {
                 if(u == null || dist[possibleU] < dist[u])
                 {
@@ -160,9 +175,9 @@ public class TileMap : MonoBehaviour {
 
             unvisited.Remove(u);
 
-            foreach(Node v in u.neighbours)
+            foreach(Tile v in u.neighbours)
             {
-                float alt = dist[u] + CostToEnterTile(v.x, v.y);
+                float alt = dist[u] + CostToEnterTile(v.X, v.Y);
                 if (alt < dist[v])
                 {
                     dist[v] = alt;
@@ -178,9 +193,9 @@ public class TileMap : MonoBehaviour {
             return;
         }
 
-        List<Node> currentPath = new List<Node>();
+        List<Tile> currentPath = new List<Tile>();
 
-        Node curr = target;
+        Tile curr = target;
 
         while(curr != null)
         {
@@ -196,16 +211,13 @@ public class TileMap : MonoBehaviour {
 
     void GeneratePathfindingGraph()
     {
-        graph = new Node[mapSizeX, mapSizeY];
+        graph = new Tile[mapSizeX, mapSizeY];
 
         for (int x = 0; x < mapSizeX; x++)
         {
             for (int y = 0; y < mapSizeY; y++)
             {
-                graph[x, y] = new Node();
-
-                graph[x, y].x = x;
-                graph[x, y].y = y;
+                graph[x, y] = new Tile(x, y);
             }
         }
 

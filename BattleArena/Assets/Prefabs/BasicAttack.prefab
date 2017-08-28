@@ -207,8 +207,13 @@ MonoBehaviour:
   meterImage: {fileID: 2800000, guid: 765e842677d7e1644aeb56fadc9bafdb, type: 3}
   sourceUnit: {fileID: 0}
   targetUnit: {fileID: 0}
+  isSwinging: 0
+  canPress: 1
+  pressAgainThreshold: 0
+  nextPressThreshold: 0
   meterSpeed: 20
   noOfSwings: 1
+  swingNo: 0
   keysToPressRandom: 1
   keysToPress: []
   possibleKeys:
@@ -217,12 +222,15 @@ MonoBehaviour:
   - 3
   - 4
   panelColor: {r: 0, g: 0, b: 0, a: 0.39215687}
+  keyPressed: 
   keysToPressText:
   - {fileID: 114556985946913848}
   keysToPressPanels:
   - {fileID: 224601189852812264}
   keysToPressPanelSpawns:
   - {fileID: 224621076566904960}
+  currentPanel: {fileID: 0}
+  currentPanelSpawn: {fileID: 0}
 --- !u!114 &114255333340262904
 MonoBehaviour:
   m_ObjectHideFlags: 1

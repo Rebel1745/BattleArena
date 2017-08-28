@@ -96,7 +96,12 @@ public class SwingMeter : MonoBehaviour {
 
     public void Close()
     {
-        MoveListController mlc = FindObjectOfType<MoveListController>();
-        mlc.Cancel();
+        //MoveListController mlc = FindObjectOfType<MoveListController>();
+        //mlc.Cancel();
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("Move");
+        foreach (GameObject go in gos)
+        {
+            Destroy(go);
+        }
     }
 }

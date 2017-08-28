@@ -66,7 +66,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1578454869212444}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4636871129459532}
@@ -152,6 +152,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a18250dcdafae345a737ccafffe2fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveListPrefab: {fileID: 1326796493646140, guid: 5468941d3cf92004ba64945687bf58f4,
-    type: 2}
+  moveList: {fileID: 0}
   canvasTransform: {fileID: 0}
