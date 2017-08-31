@@ -7,6 +7,7 @@ public class Tile
     public List<Tile> neighbours;
     public int X;
     public int Y;
+    public int tileType = 0;
 
     public Tile(int x, int y)
     {
@@ -21,5 +22,10 @@ public class Tile
                 new Vector2(X, Y),
                 new Vector2(n.X, n.Y)
             );
+    }
+
+    public Vector3 Position()
+    {
+        return new Vector3(this.X, this.Y, 0);
     }
 }

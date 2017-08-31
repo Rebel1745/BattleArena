@@ -18,7 +18,7 @@ public class CameraKeyboardController : MonoBehaviour
                 
             );
 
-        this.transform.Translate(translate * moveSpeed * Time.deltaTime * (1 + this.transform.position.y / 2), Space.World);
+        this.transform.Translate(translate * moveSpeed * Time.deltaTime, Space.World);
 
     }
 }

@@ -5,19 +5,6 @@ using System.Linq;
 
 public class TileMap : MonoBehaviour {
 
-    public GameObject selectedUnit;
-
-    public GameObject unitPlayerPrefab;
-    public GameObject unitEnemyPrefab;
-
-    public TileType[] tileTypes;
-
-    int[,] tiles;
-    Tile[,] graph;
-
-    int mapSizeX = 20;
-    int mapSizeY = 20;
-
     void Start()
     {
         /*if (selectedUnit == null)
@@ -33,6 +20,41 @@ public class TileMap : MonoBehaviour {
         selectedUnit.GetComponent<Unit>().tileY = (int)selectedUnit.transform.position.y;
         selectedUnit.GetComponent<Unit>().map = this;*/
         GenerateMap();
+    }
+
+    public GameObject selectedUnit;
+
+    public GameObject unitPlayerPrefab;
+    public GameObject unitEnemyPrefab;
+
+    public TileType[] tileTypes;
+
+    int mapSizeX = 20;
+    int mapSizeY = 20;
+
+    //int[,] tiles;
+    private Tile[,] tiles;
+    private Dictionary<Tile, GameObject> tileToGameObjectMap;
+    // remove this once clickable tile is working again. everything should be in the tiles array above
+    Tile[,] graph;
+
+    public Tile GetTileAt(int x, int y)
+    {
+        if (tiles == null)
+        {
+            Debug.LogError("Tile Array not yet instantiated");
+            return null;
+        }
+
+        try
+        {
+            return tiles[x, y];
+        }
+        catch
+        {
+            Debug.LogError("Hex not found");
+            return null;
+        }
     }
 
     public void SpawnUnitAt(GameObject unitPrefab, int x, int y)
@@ -52,19 +74,26 @@ public class TileMap : MonoBehaviour {
         GeneratePathfindingGraph();
         // now spawn visual prefabs
         GenerateMapVisuals();
+        // Create enemy first so the player is the SelectedUnit
         SpawnUnitAt(unitEnemyPrefab, 6, 5);
         SpawnUnitAt(unitPlayerPrefab, 5, 5);
     }
 
     void GenerateMapVisuals()
     {
+        tileToGameObjectMap = new Dictionary<Tile, GameObject>();
+
         for (int x = 0; x < mapSizeX; x++)
         {
             for (int y = 0; y < mapSizeY; y++)
             {
-                TileType tt = tileTypes[tiles[x, y]];
+                TileType tt = tileTypes[tiles[x, y].tileType];
                 GameObject go = (GameObject)Instantiate(tt.tileVisualPrefab, new Vector3(x, y, 0), Quaternion.identity, this.transform);
-                go.name = tt.name + " " + x + ", " + y;
+                go.name = string.Format("{0}: {1}, {2}", tt.name, x, y);
+
+                tileToGameObjectMap[tiles[x, y]] = go;
+                    
+                go.GetComponentInChildren<TextMesh>().text = string.Format("{0},{1}", x, y);
                 ClickableTile ct = go.GetComponent<ClickableTile>();
                 ct.tileX = x;
                 ct.tileY = y;
@@ -75,29 +104,30 @@ public class TileMap : MonoBehaviour {
 
     void GenerateMapData()
     {
-        tiles = new int[mapSizeX, mapSizeY];
+        tiles = new Tile[mapSizeX, mapSizeY];
 
         // Initialise our map tiles to be grass
         for (int x = 0; x < mapSizeX; x++)
         {
             for (int y = 0; y < mapSizeY; y++)
             {
-                tiles[x, y] = 0;
+                tiles[x, y] = new Tile(x, y);
+                tiles[x, y].tileType = 0;
             }
         }
 
         // Chuck some water in
-        tiles[3, 3] = 1;
-        tiles[4, 3] = 1;
-        tiles[5, 3] = 1;
-        tiles[3, 4] = 1;
-        tiles[3, 5] = 1;
-        tiles[3, 6] = 1;
+        tiles[3, 3].tileType = 1;
+        tiles[4, 3].tileType = 1;
+        tiles[5, 3].tileType = 1;
+        tiles[3, 4].tileType = 1;
+        tiles[3, 5].tileType = 1;
+        tiles[3, 6].tileType = 1;
     }
 
     public float CostToEnterTile(int targetX, int targetY)
     {
-        TileType tt = tileTypes[tiles[targetX, targetY]];
+        TileType tt = tileTypes[tiles[targetX, targetY].tileType];
 
         if (!UnitCanEnterTile(targetX,targetY))
         {
@@ -116,7 +146,7 @@ public class TileMap : MonoBehaviour {
 
     public bool UnitCanEnterTile(int x, int y)
     {
-        return tileTypes[tiles[x,y]].isWalkable;
+        return tileTypes[tiles[x,y].tileType].isWalkable;
     }
 
     public void GeneratePathTo(int x, int y)

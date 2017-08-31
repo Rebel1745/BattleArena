@@ -138,12 +138,12 @@ MonoBehaviour:
     type: 2}
   tileTypes:
   - name: Grass
-    tileVisualPrefab: {fileID: 1222861645120870, guid: 12acd30a7906aca46bb9d5497ab8ac7b,
+    tileVisualPrefab: {fileID: 1541638353580306, guid: ef62585d63ef7f14d92b7bc8194215e2,
       type: 2}
     isWalkable: 1
     movementCost: 1
   - name: Water
-    tileVisualPrefab: {fileID: 1897861326286526, guid: 6dad0fbccfa5d2c4ab539a47c9a51b57,
+    tileVisualPrefab: {fileID: 1596880890996130, guid: 794e26db15ca11b46b3b0a69cc5648f9,
       type: 2}
     isWalkable: 0
     movementCost: 1
@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 21872432}
   - component: {fileID: 21872431}
   - component: {fileID: 21872436}
+  - component: {fileID: 21872437}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -228,13 +229,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 21872430}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 5, z: -10}
+  m_LocalRotation: {x: -0.258819, y: 0, z: 0, w: 0.9659259}
+  m_LocalPosition: {x: 10, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -30, y: 0, z: 0}
 --- !u!114 &21872436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,7 +247,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2300236d824547e4bb156a964b8516b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3.5
+  moveSpeed: 10
+--- !u!114 &21872437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 21872430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e07e712be2f47c449ddeb5ca9d78b26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &28953607
 GameObject:
   m_ObjectHideFlags: 0
