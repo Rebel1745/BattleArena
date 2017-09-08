@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4539233119433046}
   - component: {fileID: 23016180380838910}
   - component: {fileID: 102112985170416006}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TileCoordLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,8 +36,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4984550866770128}
-  - component: {fileID: 114604555117097976}
-  m_Layer: 0
+  - component: {fileID: 54505694199151754}
+  m_Layer: 8
   m_Name: TileWaterPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,8 @@ GameObject:
   - component: {fileID: 33100293904672852}
   - component: {fileID: 65276559321678210}
   - component: {fileID: 23242035868620538}
-  m_Layer: 0
+  - component: {fileID: 64541192422082636}
+  m_Layer: 8
   m_Name: tileWater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,6 +173,35 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1841889022311724}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &54505694199151754
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1596880890996130}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!64 &64541192422082636
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1841889022311724}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 0
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &65276559321678210
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -205,17 +235,3 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4294902011
---- !u!114 &114604555117097976
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1596880890996130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e9a4d1da407e594286c261f9e224652, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileX: 0
-  tileY: 0
-  map: {fileID: 0}

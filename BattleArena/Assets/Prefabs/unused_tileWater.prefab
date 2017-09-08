@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23119161920428816}
   - component: {fileID: 114318875849414450}
   m_Layer: 0
-  m_Name: tileWater
+  m_Name: unused_tileWater
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

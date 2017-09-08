@@ -78,7 +78,8 @@ public class SwingMeterAlternate : SwingMeter {
             // calculate the damage using the stats of the source unit
             int damage = sourceUnit.GetComponent<Unit>().CalculateDamage(sourceUnit, hitType);
             // apply the damage to the target unit
-            targetUnit.GetComponent<Unit>().TakeDamage(damage);
+
+            /*targetUnit.GetComponent<Unit>().TakeDamage(damage);*/
 
             isSwinging = false;
             swingMeter.value = swingMeter.minValue;

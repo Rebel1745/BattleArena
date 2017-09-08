@@ -1,73 +1,79 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using QPath;
 
-public class Unit : MonoBehaviour {
+public class Unit : IQPathUnit {
 
     public int tileX;
     public int tileY;
 
     // unit stats
-    public float health = 100;
-    public int attackDamage = 10;
-    public int critMultiplier = 2;
-    public int weakDivisor = 2;
+    public string Name = "Unnamed";
+    public float Health = 100;
+    public int AttackDamage = 10;
+    public int CritMultiplier = 2;
+    public int WeakDivisor = 2;
+    public int Movement = 2;
+    public int MovementRemaining = 2;
 
     public TileMap map;
+    public Tile Tile { get; protected set; }
 
     public List<Tile> currentPath = null;
+    Queue<Tile> tilePath;
+    
+    // create an event listener to run when a unit moves
+    public delegate void UnitMovedDelegate(Tile oldTile, Tile newTile);
+    public event UnitMovedDelegate OnUnitMoved;
 
-    int moveSpeed = 2;
-
-    void Update()
+    public void ClearTilePath()
     {
-        if(currentPath != null)
+        this.tilePath = new Queue<Tile>();
+    }
+
+    public void SetTilePath(Tile[] tileArray)
+    {
+        this.tilePath = new Queue<Tile>(tileArray);
+
+        if(tilePath.Count > 0)
         {
-            int currTile = 0;
+            this.tilePath.Dequeue(); // first tile is the one we are standing in so remove it
+        }
+        
+    }
 
-            while(currTile < currentPath.Count - 1)
-            {
-                Vector3 offset = new Vector3(0, 0, -0.75f);
-                Vector3 start = map.TileCoordToWorldCoord(currentPath[currTile].X, currentPath[currTile].Y) + offset;
-                Vector3 end = map.TileCoordToWorldCoord(currentPath[currTile + 1].X, currentPath[currTile + 1].Y) + offset;
+    public void SetTile(Tile newTile)
+    {
+        Tile oldTile = Tile;
 
-                Debug.DrawLine(start, end, Color.red);
+        if(newTile != null)
+        {
+            newTile.RemoveUnit(this);
+        }
+        Tile = newTile;
 
-                currTile++;
-            }
+        newTile.AddUnit(this);
+
+        if(OnUnitMoved != null)
+        {
+            OnUnitMoved(oldTile, newTile);
         }
     }
 
-    public void MoveNextTile()
+    public void DUMMY_PATHING_FUNCTION()
     {
-        float remainingMovement = moveSpeed;
+        Tile[] pathTiles = QPath.QPath.FindPath<Tile>(
+            Tile.TileMap, 
+            this, 
+            Tile, 
+            Tile.TileMap.GetTileAt(Tile.X - 3, Tile.Y), 
+            Tile.CostEstimate
+        );
 
-        while(remainingMovement > 0)
-        {
-            if (currentPath == null)
-            {
-                return;
-            }
+        Debug.Log("Got pathfinding length of " + pathTiles.Length);
 
-            // Get cost from current tile to next tile
-            remainingMovement -= map.CostToEnterTile(currentPath[1].X, currentPath[1].Y);
-
-            // move us to the next tile in the sequence
-            tileX = currentPath[1].X;
-            tileY = currentPath[1].Y;
-            transform.position = map.TileCoordToWorldCoord(tileX, tileY);
-
-            // Remove the old "current" tile
-            currentPath.RemoveAt(0);
-
-            if (currentPath.Count == 1)
-            {
-                // this tile is ultimate destination so clear current path
-                currentPath = null;
-            }
-
-        }
-        
+        SetTilePath(pathTiles);
     }
 
     // TODO: change hit type to ENUM? 
@@ -79,13 +85,13 @@ public class Unit : MonoBehaviour {
         switch (hitType)
         {
             case "crit":
-                damage = sourceGo.attackDamage * sourceGo.critMultiplier;
+                damage = sourceGo.AttackDamage * sourceGo.CritMultiplier;
                 break;
             case "normal":
-                damage = sourceGo.attackDamage;
+                damage = sourceGo.AttackDamage;
                 break;
             case "weak":
-                damage = sourceGo.attackDamage / sourceGo.weakDivisor;
+                damage = sourceGo.AttackDamage / sourceGo.WeakDivisor;
                 break;
             case "miss":
                 damage = 0;
@@ -100,14 +106,87 @@ public class Unit : MonoBehaviour {
     }
 
     // Function to alter the health of a unit
-    public void TakeDamage(int damage)
+    /*public void TakeDamage(int damage)
     {
-        health -= damage;
-        Debug.Log(health);
-        if(health <= 0)
+        Health -= damage;
+        Debug.Log(Health);
+        if(Health <= 0)
         {
             Debug.Log("Dude died yo");
             Destroy(gameObject,2f);
         }
+    }*/
+
+    public void DoTurn()
+    {
+        Debug.Log("Doing Turn");
+
+        if(tilePath == null || tilePath.Count == 0)
+        {
+            return;
+        }
+
+        Tile oldTile = Tile;
+        Tile newTile = tilePath.Dequeue();
+
+        SetTile(newTile);
+    }
+
+    public int MovementCostToEnterTile(Tile tile)
+    {
+        return tile.BaseMovementCost();
+    }
+
+    public float AggregateTurnsToEnterTile(Tile tile, float turnsToDate)
+    {
+        // This should be used if there are going to be different costs to tile types
+        //  E.g. if there is a swamp tile it may cost 2 to go through one tile
+
+        float baseTurnsToEnterTile = MovementCostToEnterTile(tile) / Movement;
+
+        if(baseTurnsToEnterTile < 0)
+        {
+            // Impassible terrain
+            return -999999;
+        }
+
+        if(baseTurnsToEnterTile > 1)
+        {
+            baseTurnsToEnterTile = 1;
+        }
+
+        float turnsRemaining = MovementRemaining / Movement;
+
+        float turnsToDateWhole = Mathf.Floor(turnsToDate);
+        float turnsToDateFraction = turnsToDate - turnsToDateWhole;
+
+        if((turnsToDateFraction > 0 && turnsToDateFraction < 0.01f) || turnsToDateFraction > 0.99f)
+        {
+            Debug.Log("Have we got some rounding issues? " + turnsToDate);
+
+            if (turnsToDateFraction < 0.01f)
+                turnsToDateFraction = 0;
+
+            if(turnsToDateFraction > 0.99f)
+            {
+                turnsToDateWhole += 1;
+                turnsToDateFraction = 0;
+            }
+        }
+
+        float turnsUsedAfterThisMove = turnsToDateFraction + baseTurnsToEnterTile;
+
+        if(turnsUsedAfterThisMove > 1)
+        {
+            // Not enough movement left!
+            turnsUsedAfterThisMove = 1;
+        }
+
+        return turnsToDateWhole + turnsUsedAfterThisMove;
+    }
+
+    public float CostToEnterTile(IQPathTile sourceTile, IQPathTile destinationTile)
+    {
+        return 1;
     }
 }

@@ -11,7 +11,7 @@ public class ClickableTile : MonoBehaviour {
 
 	void OnMouseUp()
     {
-        if(TurnManager.instance.GetTileClickability())
-            map.GeneratePathTo(tileX, tileY);
+        //if(TurnManager.instance.GetTileClickability())
+            //map.GeneratePathTo(tileX, tileY);
     }
 }

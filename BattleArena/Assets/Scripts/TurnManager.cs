@@ -27,15 +27,16 @@ public class TurnManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if(unitInPlay == null)
+        /*if(unitInPlay == null)
         {
             GameObject[] gos = GameObject.FindGameObjectsWithTag("Player");
             if (gos != null)
                 SetUnitInPlay(gos[0]);
             else
                 Debug.LogError("NO PLAYER IN THE SCENE");
-        }
+        }*/
 
+        unitInPlay = null;
         targetUnit = null;
     }
 
