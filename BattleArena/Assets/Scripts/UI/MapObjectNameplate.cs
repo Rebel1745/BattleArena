@@ -21,11 +21,13 @@ public class MapObjectNameplate : MonoBehaviour {
 
     RectTransform rectTransform;
 	
-	// Update is called once per frame
+	// LateUpdate is called after the normal update; this prevents jitters as the camera is updated (moved)
 	void LateUpdate () {
 
         if(MyTarget == null)
         {
+            // the object we are tracking has been removed.  DESTROY OURSELVES
+            Destroy(gameObject);
             return;
         }
 

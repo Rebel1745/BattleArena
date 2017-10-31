@@ -9,7 +9,6 @@ public class CameraKeyboardController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         Vector3 translate = new Vector3
             (
                 Input.GetAxis("Horizontal"),

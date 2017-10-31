@@ -6,23 +6,28 @@ using QPath;
 
 public class Tile : IQPathTile
 {
-    public int X;
-    public int Y;
-    public int tileType = 0;
-    public readonly TileMap TileMap;
-
-    HashSet<Unit> units;
-
-    public int movementCost = 1;
-
-    public float Elevation = 1;
-
     public Tile(TileMap tileMap, int x, int y)
     {
         this.TileMap = tileMap;
         this.X = x;
         this.Y = y;
+
+        units = new HashSet<Unit>();
     }
+
+    public int X;
+    public int Y;
+    public readonly TileMap TileMap;
+
+    HashSet<Unit> units;
+
+    public float Elevation = 0;
+
+    public enum TERRAIN_TYPE { GRASS, WATER, BOX }
+    public enum ELEVATION_TYPE { FLAT, HIGH, MEDIUM, LOW }
+
+    public TERRAIN_TYPE TerrainType { get; set; }
+    public ELEVATION_TYPE ElevationType { get; set; }
 
     public float DistanceTo(Tile n)
     {
@@ -79,7 +84,17 @@ public class Tile : IQPathTile
 
     public int BaseMovementCost()
     {
-        return movementCost;
+        // change the movement cost based on elevation
+        if (ElevationType == ELEVATION_TYPE.HIGH)
+            return 1;
+        if (ElevationType == ELEVATION_TYPE.LOW)
+            return 1;
+        if (ElevationType == ELEVATION_TYPE.MEDIUM)
+            return 1;
+        if (TerrainType == TERRAIN_TYPE.WATER)
+            return -99;
+
+        return 1;
     }
 
     Tile[] neighbours;

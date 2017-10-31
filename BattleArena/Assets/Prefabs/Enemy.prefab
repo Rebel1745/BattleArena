@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4263486729301926}
-  - component: {fileID: 114030557716181680}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -123,24 +122,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114030557716181680
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1244820120417750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5079b70f4927cb147828c05ac3e49f90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileX: 0
-  tileY: 0
-  health: 100
-  attackDamage: 10
-  critMultiplier: 2
-  weakDivisor: 2
-  map: {fileID: 0}
 --- !u!114 &114215042437400952
 MonoBehaviour:
   m_ObjectHideFlags: 1

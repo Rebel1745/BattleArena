@@ -8,18 +8,6 @@ public class TileMap : MonoBehaviour, IQPathWorld {
 
     void Start()
     {
-        /*if (selectedUnit == null)
-        {
-            GameObject[] gos = GameObject.FindGameObjectsWithTag("Player");
-            if (gos != null)
-                selectedUnit = gos[0];
-            else
-                Debug.LogError("NO PLAYER IN THE SCENE");
-        }
-        // Sort selected unit variables
-        selectedUnit.GetComponent<Unit>().tileX = (int)selectedUnit.transform.position.x;
-        selectedUnit.GetComponent<Unit>().tileY = (int)selectedUnit.transform.position.y;
-        selectedUnit.GetComponent<Unit>().map = this;*/
         GenerateMap();
     }
 
@@ -32,41 +20,59 @@ public class TileMap : MonoBehaviour, IQPathWorld {
 
     public int mapSizeX = 20;
     public int mapSizeY = 20;
-
-    //int[,] tiles;
+    
     private Tile[,] tiles;
     private Dictionary<Tile, GameObject> tileToGameObjectMap;
     private Dictionary<GameObject, Tile> gameObjectToTileMap;
 
     private HashSet<Unit> units;
     private Dictionary<Unit, GameObject> unitToGameObjectMap;
+    public Unit[] Units
+    {
+        get { return units.ToArray(); }
+    }
 
-    // remove this once clickable tile is working again. everything should be in the tiles array above
-    Tile[,] graph;
+    public bool animationIsPlaying = false;
+    public delegate void UnitCreatedDelegate(Unit unit, GameObject unitGO);
+    public event UnitCreatedDelegate OnUnitCreated;
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(units != null)
+            StartCoroutine(DoAllUnitMoves());
+        }
+    }
+
+    IEnumerator DoAllUnitMoves()
+    {
+        if (units != null)
+        {
+            foreach (Unit u in units)
             {
-                foreach(Unit u in units)
-                {
-                    u.DoTurn();
-                }
+                yield return DoUnitMoves(u);
             }
         }
-        if (Input.GetKeyDown(KeyCode.P))
+    }
+
+    public IEnumerator DoUnitMoves(Unit u)
+    {
+        while (u.DoMove())
         {
-            Debug.Log("P Pressed");
-            if (units != null)
+            Debug.Log("DoMove returned true -- will be called again");
+            // Check if animation is playing, if so, let it finish
+            while (animationIsPlaying)
             {
-                foreach (Unit u in units)
-                {
-                    Debug.Log("Pathfinding");
-                    u.DUMMY_PATHING_FUNCTION();
-                }
+                yield return null;
             }
+        }
+    }
+
+    public void EndTurn()
+    {
+        foreach(Unit u in units)
+        {
+            u.RefreshMovement();
         }
     }
 
@@ -123,14 +129,15 @@ public class TileMap : MonoBehaviour, IQPathWorld {
 
         GameObject unitGO = (GameObject)Instantiate(unitPrefab, myTileGO.transform.position, Quaternion.identity, myTileGO.transform);
         unit.OnUnitMoved += unitGO.GetComponent<UnitView>().OnUnitMoved;
-        // THIS IS ALL TEMPORARY (I HOPE)
-       /* selectedUnit = unitGO;
-        selectedUnit.GetComponent<Unit>().tileX = (int)selectedUnit.transform.position.x;
-        selectedUnit.GetComponent<Unit>().tileY = (int)selectedUnit.transform.position.y;
-        selectedUnit.GetComponent<Unit>().map = this;*/
 
         units.Add(unit);
         unitToGameObjectMap.Add(unit, unitGO);
+
+        if(OnUnitCreated != null)
+        {
+            OnUnitCreated(unit, unitGO);
+        }
+
     }
 
     public void GenerateMap()
@@ -155,7 +162,7 @@ public class TileMap : MonoBehaviour, IQPathWorld {
         {
             for (int y = 0; y < mapSizeY; y++)
             {
-                TileType tt = tileTypes[tiles[x, y].tileType];
+                TileType tt = tileTypes[(int)tiles[x, y].TerrainType];
 
                 GameObject tileGO = (GameObject)Instantiate(
                     tt.tileVisualPrefab, 
@@ -191,46 +198,26 @@ public class TileMap : MonoBehaviour, IQPathWorld {
             for (int y = 0; y < mapSizeY; y++)
             {
                 tiles[x, y] = new Tile(this, x, y);
-                tiles[x, y].tileType = 0;
+                tiles[x, y].TerrainType = Tile.TERRAIN_TYPE.GRASS;
             }
         }
 
         // Chuck some water in
-        tiles[3, 3].tileType = 1;
-        tiles[3, 3].movementCost = -999;
-        tiles[4, 3].tileType = 1;
-        tiles[4, 3].movementCost = -999;
-        tiles[5, 3].tileType = 1;
-        tiles[5, 3].movementCost = -999;
-        tiles[3, 4].tileType = 1;
-        tiles[3, 4].movementCost = -999;
-        tiles[3, 5].tileType = 1;
-        tiles[3, 5].movementCost = -999;
-        tiles[3, 6].tileType = 1;
-        tiles[3, 6].movementCost = -999;
-    }
+        tiles[3, 3].TerrainType = Tile.TERRAIN_TYPE.WATER;
+        tiles[4, 3].TerrainType = Tile.TERRAIN_TYPE.WATER;
+        tiles[5, 3].TerrainType = Tile.TERRAIN_TYPE.WATER;
+        tiles[3, 4].TerrainType = Tile.TERRAIN_TYPE.WATER;
+        tiles[3, 5].TerrainType = Tile.TERRAIN_TYPE.WATER;
+        tiles[3, 6].TerrainType = Tile.TERRAIN_TYPE.WATER;
 
-    public float CostToEnterTile(int targetX, int targetY)
-    {
-        TileType tt = tileTypes[tiles[targetX, targetY].tileType];
-
-        if (!UnitCanEnterTile(targetX,targetY))
-        {
-            return Mathf.Infinity;
-        }
-
-        float cost = tt.movementCost;
-
-        return cost;
+        // Test high box
+        tiles[6, 6].TerrainType = Tile.TERRAIN_TYPE.BOX;
+        tiles[6, 6].ElevationType = Tile.ELEVATION_TYPE.HIGH;
+        tiles[6, 6].Elevation = 0.25f;
     }
 
     public Vector3 TileCoordToWorldCoord(int x, int y)
     {
         return new Vector3(x, y, 0);
-    }
-
-    public bool UnitCanEnterTile(int x, int y)
-    {
-        return tileTypes[tiles[x,y].tileType].isWalkable;
     }
 }

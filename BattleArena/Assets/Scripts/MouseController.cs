@@ -16,6 +16,15 @@ public class MouseController : MonoBehaviour {
 		
 	}
 
+    public GameObject UnitSelectionPanel;
+    public GameObject UnitActionPanel;
+    public GameObject UnitAttackPanel;
+    public GameObject UnitItemPanel;
+
+    public enum SELECTED_UNIT_STATE { WAITING, MOVE, ATTACK, ITEM };
+
+    public SELECTED_UNIT_STATE SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
+
     //Generic variables
     TileMap tileMap;
     Tile tileUnderMouse;
@@ -27,7 +36,17 @@ public class MouseController : MonoBehaviour {
     Vector3 lastMouseGroundPlanePosition;
     Vector3 cameraTargetOffset;
 
-    Unit selectedUnit = null;
+    Unit __selectedUnit = null;
+    public Unit SelectedUnit
+    {
+        get { return __selectedUnit;  }
+        set
+        {
+            __selectedUnit = value;
+            UnitSelectionPanel.SetActive(__selectedUnit != null);
+        }
+    }
+
     Tile[] tilePath;
     LineRenderer lineRenderer;
 
@@ -44,17 +63,85 @@ public class MouseController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            SelectedUnit = null;
+            SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
             CancelUpdateFunc();
         }
 
         Update_CurrentFunc();
 
+        Update_ScrollZoom();
+
         lastMousePosition = Input.mousePosition;
         tileLastUnderMouse = tileUnderMouse;
+
+        if(SelectedUnit != null)
+        {
+            // draw the path
+            DrawPath((tilePath != null) ? tilePath : SelectedUnit.GetTilePath());
+            // show/hide correct unit selection panels
+            switch (SelectedUnitState) {
+                case SELECTED_UNIT_STATE.MOVE:
+                    UnitActionPanel.SetActive(true);
+                    UnitAttackPanel.SetActive(false);
+                    UnitItemPanel.SetActive(false);
+                break;
+                case SELECTED_UNIT_STATE.ATTACK:
+                    UnitActionPanel.SetActive(false);
+                    UnitAttackPanel.SetActive(true);
+                    UnitItemPanel.SetActive(false);
+                    break;
+                case SELECTED_UNIT_STATE.ITEM:
+                    UnitActionPanel.SetActive(false);
+                    UnitAttackPanel.SetActive(false);
+                    UnitItemPanel.SetActive(true);
+                    break;
+                case SELECTED_UNIT_STATE.WAITING:
+                    UnitActionPanel.SetActive(true);
+                    UnitAttackPanel.SetActive(false);
+                    UnitItemPanel.SetActive(false);
+                    break;
+            }
+        }
+        else
+        {
+            DrawPath(null);
+        }
+    }
+
+    public void MoveButton()
+    {
+        SelectedUnitState = SELECTED_UNIT_STATE.MOVE;
+    }
+
+    public void AttackButton()
+    {
+        SelectedUnitState = SELECTED_UNIT_STATE.ATTACK;
+        // replace with function call that deals with attacks
+        CancelUpdateFunc();
+    }
+
+    public void ItemButton()
+    {
+        SelectedUnitState = SELECTED_UNIT_STATE.ITEM;
+        // replace with function call that deals with items
+        CancelUpdateFunc();
+    }
+
+    public void CancelButton()
+    {
+        SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
+        CancelUpdateFunc();
     }
 
     void Update_DetectModeStart()
     {
+        // If we are over a UI element ignore mouse clicks
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             // LMB just went down
@@ -69,10 +156,16 @@ public class MouseController : MonoBehaviour {
 
             if(us != null && us.Length > 0)
             {
-                selectedUnit = us[0];
-                Update_CurrentFunc = Update_UnitMovement;
+                if(SelectedUnit != us[0])
+                    SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
+                SelectedUnit = us[0];
             }
 
+        }
+        else if (SelectedUnit != null && SelectedUnitState == SELECTED_UNIT_STATE.MOVE)
+        {
+            // selected a unit and right mouse button is down
+            Update_CurrentFunc = Update_UnitMovement;
         }
         else if(Input.GetMouseButton(0) && Vector3.Distance( Input.mousePosition , lastMousePosition) > mouseDragThreshold)
         {
@@ -87,7 +180,7 @@ public class MouseController : MonoBehaviour {
     {
         Update_CurrentFunc = Update_DetectModeStart;
 
-        selectedUnit = null;
+        tilePath = null;
     }
 
     Tile MouseToTile()
@@ -124,13 +217,16 @@ public class MouseController : MonoBehaviour {
 
     void Update_UnitMovement()
     {
-        if (Input.GetMouseButtonUp(1) || selectedUnit == null)
+        if (Input.GetMouseButtonUp(0) || SelectedUnit == null)
         {
             Debug.Log("Complete unit movement");
 
-            if(selectedUnit != null)
+            if(SelectedUnit != null)
             {
-                selectedUnit.SetTilePath(tilePath);
+                SelectedUnit.SetTilePath(tilePath);
+
+                // remove the below if you dont want to move to be started immediately after defining a path
+                StartCoroutine(tileMap.DoUnitMoves(SelectedUnit));
             }
 
             CancelUpdateFunc();
@@ -143,14 +239,12 @@ public class MouseController : MonoBehaviour {
         {
             tilePath = QPath.QPath.FindPath<Tile>(
                 tileMap, 
-                selectedUnit, 
-                selectedUnit.Tile, 
+                SelectedUnit, 
+                SelectedUnit.Tile, 
                 tileUnderMouse, 
                 Tile.CostEstimate
             );
 
-            // draw the path
-            DrawPath(tilePath);
         }
     }
 
@@ -196,5 +290,28 @@ public class MouseController : MonoBehaviour {
 
         lastMouseGroundPlanePosition = hitPos = MouseToGroundPlane(Input.mousePosition);
 
+    }
+
+    void Update_ScrollZoom()
+    {
+        float scrollAmount = Input.GetAxis("Mouse ScrollWheel");
+        float minHeight = -12;
+        float maxHeight = -4;
+        if(scrollAmount != 0)
+        {
+            Vector3 p = Camera.main.transform.position;
+
+            p.z += scrollAmount * 5;
+
+            if (p.z < minHeight)
+            {
+                p.z = minHeight;
+            }
+            if (p.z > maxHeight)
+            {
+                p.z = maxHeight;
+            }
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, p, Time.deltaTime * 50f);
+        }
     }
 }

@@ -9,7 +9,7 @@ public class Unit : IQPathUnit {
     public int tileY;
 
     // unit stats
-    public string Name = "Unnamed";
+    public string Name = "Unnamed Fighter";
     public float Health = 100;
     public int AttackDamage = 10;
     public int CritMultiplier = 2;
@@ -21,7 +21,7 @@ public class Unit : IQPathUnit {
     public Tile Tile { get; protected set; }
 
     public List<Tile> currentPath = null;
-    Queue<Tile> tilePath;
+    List<Tile> tilePath;
     
     // create an event listener to run when a unit moves
     public delegate void UnitMovedDelegate(Tile oldTile, Tile newTile);
@@ -29,18 +29,17 @@ public class Unit : IQPathUnit {
 
     public void ClearTilePath()
     {
-        this.tilePath = new Queue<Tile>();
+        this.tilePath = new List<Tile>();
     }
 
     public void SetTilePath(Tile[] tileArray)
     {
-        this.tilePath = new Queue<Tile>(tileArray);
+        this.tilePath = new List<Tile>(tileArray);     
+    }
 
-        if(tilePath.Count > 0)
-        {
-            this.tilePath.Dequeue(); // first tile is the one we are standing in so remove it
-        }
-        
+    public Tile[] GetTilePath()
+    {
+        return (this.tilePath == null) ? null : this.tilePath.ToArray();
     }
 
     public void SetTile(Tile newTile)
@@ -117,23 +116,58 @@ public class Unit : IQPathUnit {
         }
     }*/
 
-    public void DoTurn()
+    public bool UnitWaitingForOrders()
+    {
+        if(MovementRemaining > 0 && (tilePath == null || tilePath.Count == 0))
+        {
+            // add other clauses to the if statement if more things can be added to player e.g. defend
+            return true;
+        }
+
+        return false;
+    }
+
+    // processes one tile worth of movement for the unit
+    public bool DoMove()
     {
         Debug.Log("Doing Turn");
 
+        if (MovementRemaining <= 0)
+            return false;
+
         if(tilePath == null || tilePath.Count == 0)
         {
-            return;
+            return false;
         }
 
-        Tile oldTile = Tile;
-        Tile newTile = tilePath.Dequeue();
+        Tile tileWeAreLeaving = tilePath[0];
+        Tile newTile = tilePath[1];
+
+        int costToEnter = MovementCostToEnterTile(newTile);
+
+        if(costToEnter > MovementRemaining && MovementRemaining < Movement)
+        {
+            // we cant enter the tile this turn
+            return false;
+        }
+
+        tilePath.RemoveAt(0);
+
+        if (tilePath.Count == 1)
+        {
+            // last tile in the path, clear the queue
+            tilePath = null;
+        }
 
         SetTile(newTile);
+        MovementRemaining = Mathf.Max(MovementRemaining - costToEnter, 0);
+
+        return tilePath != null && MovementRemaining > 0;
     }
 
     public int MovementCostToEnterTile(Tile tile)
     {
+        // this may override the base movement cost depending on unit type and elevation_type
         return tile.BaseMovementCost();
     }
 
@@ -188,5 +222,10 @@ public class Unit : IQPathUnit {
     public float CostToEnterTile(IQPathTile sourceTile, IQPathTile destinationTile)
     {
         return 1;
+    }
+
+    public void RefreshMovement()
+    {
+        MovementRemaining = Movement;
     }
 }
