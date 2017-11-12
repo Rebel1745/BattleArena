@@ -19,6 +19,8 @@ public class Tile : IQPathTile
     public int Y;
     public readonly TileMap TileMap;
 
+    public TileType TileType;
+
     HashSet<Unit> units;
 
     public float Elevation = 0;

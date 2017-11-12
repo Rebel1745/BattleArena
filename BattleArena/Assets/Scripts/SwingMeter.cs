@@ -8,8 +8,8 @@ public class SwingMeter : MonoBehaviour {
     public Slider swingMeter;
     public Texture2D meterImage;
 
-    public GameObject sourceUnit;
-    public GameObject targetUnit;
+    public Unit sourceUnit;
+    public Unit targetUnit;
 
     public bool isSwinging = false;
 
@@ -40,12 +40,15 @@ public class SwingMeter : MonoBehaviour {
     public Transform currentPanel;
     public Transform currentPanelSpawn;
 
+    MouseController mc;
+
     // Use this for initialization
     void Start ()
     {
         InitialiseKeys();
-        sourceUnit = TurnManager.instance.GetUnitInPlay();
-        targetUnit = TurnManager.instance.GetTargetUnit();
+        mc = GameObject.FindObjectOfType<MouseController>();
+        sourceUnit = mc.SelectedUnit;
+        targetUnit = mc.TargetUnit;
     }
 
     // virtual functions

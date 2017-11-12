@@ -147,9 +147,11 @@ public class TileMap : MonoBehaviour, IQPathWorld {
         // now spawn visual prefabs
         GenerateMapVisuals();
         // Create enemy first so the player is the SelectedUnit
-        //Unit enemyUnit = new Unit();
-        //SpawnUnitAt(enemyUnit, unitEnemyPrefab, 6, 5);
+        Unit enemyUnit = new Unit();
+        enemyUnit.Name = "Callum";
+        SpawnUnitAt(enemyUnit, unitEnemyPrefab, 6, 5);
         Unit playerUnit = new Unit();
+        playerUnit.Name = "Darren";
         SpawnUnitAt(playerUnit, unitPlayerPrefab, 5, 5);
     }
 
@@ -172,14 +174,15 @@ public class TileMap : MonoBehaviour, IQPathWorld {
                 );
 
                 Tile t = tiles[x, y];
+                t.TileType = tt;
 
                 tileToGameObjectMap[t] = tileGO;
                 gameObjectToTileMap[tileGO] = t;
 
                 tileGO.name = string.Format("{0}: {1}, {2}", tt.name, x, y);
                 
-
-                tileGO.GetComponentInChildren<TextMesh>().text = string.Format("{0},{1}\n{2}", x, y, t.BaseMovementCost());
+                //Removed the text from each tile
+                //tileGO.GetComponentInChildren<TextMesh>().text = string.Format("{0},{1}\n{2}", x, y, t.BaseMovementCost());
                 /*ClickableTile ct = go.GetComponent<ClickableTile>();
                 ct.tileX = x;
                 ct.tileY = y;

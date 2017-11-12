@@ -39,13 +39,16 @@ public class MouseController : MonoBehaviour {
     Unit __selectedUnit = null;
     public Unit SelectedUnit
     {
-        get { return __selectedUnit;  }
+        get { return __selectedUnit; }
         set
         {
+            Debug.Log("Selected Unit Changed");
             __selectedUnit = value;
             UnitSelectionPanel.SetActive(__selectedUnit != null);
         }
     }
+
+    public Unit TargetUnit;
 
     Tile[] tilePath;
     LineRenderer lineRenderer;
@@ -61,9 +64,12 @@ public class MouseController : MonoBehaviour {
 
         tileUnderMouse = MouseToTile();
 
+        HighlightTile();
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             SelectedUnit = null;
+            TargetUnit = null;
             SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
             CancelUpdateFunc();
         }
@@ -109,6 +115,29 @@ public class MouseController : MonoBehaviour {
         }
     }
 
+    void HighlightTile()
+    {
+        if((tileUnderMouse != null || tileLastUnderMouse != null) && tileUnderMouse != tileLastUnderMouse)
+        {
+            GameObject currentTile, lastTile;
+            Renderer currentTileRenderer, lastTileRenderer;
+
+            if(tileUnderMouse != null)
+            {
+                currentTile = tileMap.GetGameObjectFromTile(tileUnderMouse);
+                currentTileRenderer = currentTile.GetComponentInChildren<Renderer>();
+                currentTileRenderer.material = tileUnderMouse.TileType.SelectedMaterial;
+            }           
+
+            if(tileLastUnderMouse != null)
+            {
+                lastTile = tileMap.GetGameObjectFromTile(tileLastUnderMouse);
+                lastTileRenderer = lastTile.GetComponentInChildren<Renderer>();
+                lastTileRenderer.material = tileLastUnderMouse.TileType.BaseMaterial;
+            }
+        }
+    }
+
     public void MoveButton()
     {
         SelectedUnitState = SELECTED_UNIT_STATE.MOVE;
@@ -116,9 +145,36 @@ public class MouseController : MonoBehaviour {
 
     public void AttackButton()
     {
-        SelectedUnitState = SELECTED_UNIT_STATE.ATTACK;
         // replace with function call that deals with attacks
-        CancelUpdateFunc();
+        Update_CurrentFunc = Update_UnitAttack;
+    }
+
+    void Update_UnitAttack()
+    {
+        // Click on enemy unit to set as TargetUnit
+        if (tileUnderMouse != null && Input.GetMouseButtonUp(0))
+        {
+            Debug.Log("Mouse Up: Attack Click!");
+
+            // could there be more than one unit on a tile?
+            Unit[] us = tileUnderMouse.Units();
+
+            if (us != null && us.Length > 0)
+            {
+                if (SelectedUnit != us[0])
+                    TargetUnit = us[0];
+            }
+            else
+            {
+                return;
+            }
+
+            Debug.Log(SelectedUnit.Name);
+            Debug.Log(TargetUnit.Name);
+
+            // TargetUnit has been set, display attacks menu
+            SelectedUnitState = SELECTED_UNIT_STATE.ATTACK;
+        }
     }
 
     public void ItemButton()
@@ -145,11 +201,11 @@ public class MouseController : MonoBehaviour {
         if (Input.GetMouseButtonDown(0))
         {
             // LMB just went down
-            Debug.Log("Mouse Down");
+            //Debug.Log("Mouse Down");
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log("Mouse Up: Click!");
+            //Debug.Log("Mouse Up: Click!");
 
             // could there be more than one unit on a tile?
             Unit[] us = tileUnderMouse.Units();

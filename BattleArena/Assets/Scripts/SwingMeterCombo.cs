@@ -97,10 +97,10 @@ public class SwingMeterCombo : SwingMeter {
         string hitType = CheckHitType(stoppingColor, currentPanel);
         
         // calculate the damage using the stats of the source unit
-        int damage = sourceUnit.GetComponent<Unit>().CalculateDamage(sourceUnit, hitType);
+        int damage = sourceUnit.CalculateDamage(sourceUnit, hitType);
         // apply the damage to the target unit
 
-        /*targetUnit.GetComponent<Unit>().TakeDamage(damage);*/
+        targetUnit.TakeDamage(damage);
 
         currentPanel = null;
         currentPanelSpawn = null;

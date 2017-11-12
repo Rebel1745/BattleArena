@@ -60,37 +60,21 @@ public class Unit : IQPathUnit {
         }
     }
 
-    public void DUMMY_PATHING_FUNCTION()
-    {
-        Tile[] pathTiles = QPath.QPath.FindPath<Tile>(
-            Tile.TileMap, 
-            this, 
-            Tile, 
-            Tile.TileMap.GetTileAt(Tile.X - 3, Tile.Y), 
-            Tile.CostEstimate
-        );
-
-        Debug.Log("Got pathfinding length of " + pathTiles.Length);
-
-        SetTilePath(pathTiles);
-    }
-
     // TODO: change hit type to ENUM? 
-    public int CalculateDamage(GameObject source, string hitType)
+    public int CalculateDamage(Unit source, string hitType)
     {
         int damage = 0;
-        Unit sourceGo = source.GetComponent<Unit>();
 
         switch (hitType)
         {
             case "crit":
-                damage = sourceGo.AttackDamage * sourceGo.CritMultiplier;
+                damage = source.AttackDamage * source.CritMultiplier;
                 break;
             case "normal":
-                damage = sourceGo.AttackDamage;
+                damage = source.AttackDamage;
                 break;
             case "weak":
-                damage = sourceGo.AttackDamage / sourceGo.WeakDivisor;
+                damage = source.AttackDamage / source.WeakDivisor;
                 break;
             case "miss":
                 damage = 0;
@@ -105,16 +89,15 @@ public class Unit : IQPathUnit {
     }
 
     // Function to alter the health of a unit
-    /*public void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         Health -= damage;
         Debug.Log(Health);
         if(Health <= 0)
         {
             Debug.Log("Dude died yo");
-            Destroy(gameObject,2f);
         }
-    }*/
+    }
 
     public bool UnitWaitingForOrders()
     {

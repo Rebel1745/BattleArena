@@ -7,5 +7,7 @@ public class TileType {
 
     public string name;
     public GameObject tileVisualPrefab;
+    public Material BaseMaterial;
+    public Material SelectedMaterial;
     public float VerticalOffset = 0f;
 }
