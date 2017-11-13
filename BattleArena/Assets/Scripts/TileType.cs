@@ -6,7 +6,7 @@ using UnityEngine;
 public class TileType {
 
     public string name;
-    public GameObject tileVisualPrefab;
+    public GameObject[] tileVisualPrefabs;
     public Material BaseMaterial;
     public Material SelectedMaterial;
     public float VerticalOffset = 0f;

@@ -14,7 +14,7 @@ public class AttackController : MonoBehaviour {
         mc = GameObject.FindObjectOfType<MouseController>();
     }
 
-    public void DoMove(GameObject prefab)
+    public void DoMove(Ability ability)
     {
         EventSystem.current.SetSelectedGameObject(null);
         // before instantiating a new move, remove any that may already be on screen
@@ -23,7 +23,7 @@ public class AttackController : MonoBehaviour {
         {
             Destroy(go);
         }
-        GameObject moveGO = (GameObject)Instantiate(prefab, parent);
+        GameObject moveGO = (GameObject)Instantiate(ability.AbilitySwingMeterPrefab, parent);
         //gameObject.SetActive(false);
     }
 }

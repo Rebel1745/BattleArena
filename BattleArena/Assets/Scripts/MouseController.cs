@@ -42,7 +42,6 @@ public class MouseController : MonoBehaviour {
         get { return __selectedUnit; }
         set
         {
-            Debug.Log("Selected Unit Changed");
             __selectedUnit = value;
             UnitSelectionPanel.SetActive(__selectedUnit != null);
         }
@@ -166,6 +165,9 @@ public class MouseController : MonoBehaviour {
             }
             else
             {
+                Debug.Log("No target unit found");
+                SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
+                SelectedUnit = null;
                 return;
             }
 
@@ -215,6 +217,13 @@ public class MouseController : MonoBehaviour {
                 if(SelectedUnit != us[0])
                     SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
                 SelectedUnit = us[0];
+            }
+            else
+            {
+                Debug.Log("No selected unit found");
+                SelectedUnitState = SELECTED_UNIT_STATE.WAITING;
+                SelectedUnit = null;
+                return;
             }
 
         }

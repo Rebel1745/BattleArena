@@ -164,10 +164,13 @@ public class TileMap : MonoBehaviour, IQPathWorld {
         {
             for (int y = 0; y < mapSizeY; y++)
             {
+                // select tile type
                 TileType tt = tileTypes[(int)tiles[x, y].TerrainType];
+                // select random tile prefab according to type
+                int randTT = Random.Range(0, tt.tileVisualPrefabs.Length);
 
                 GameObject tileGO = (GameObject)Instantiate(
-                    tt.tileVisualPrefab, 
+                    tt.tileVisualPrefabs[randTT], 
                     new Vector3(x, y, 0), 
                     Quaternion.identity, 
                     this.transform

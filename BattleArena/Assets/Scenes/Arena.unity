@@ -34,10 +34,10 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 1
+  m_ReflectionIntensity: 0.5
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.26572725, g: 0.27143627, b: 0.25494534, a: 0.5}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -138,20 +138,21 @@ MonoBehaviour:
     type: 2}
   tileTypes:
   - name: Grass
-    tileVisualPrefab: {fileID: 1541638353580306, guid: ef62585d63ef7f14d92b7bc8194215e2,
-      type: 2}
+    tileVisualPrefabs:
+    - {fileID: 1541638353580306, guid: ef62585d63ef7f14d92b7bc8194215e2, type: 2}
+    - {fileID: 1541638353580306, guid: 7209d7c866f4b8e47b2a728096c59745, type: 2}
     BaseMaterial: {fileID: 2100000, guid: d832207657128a3428dd5eca65d8a9a5, type: 2}
     SelectedMaterial: {fileID: 2100000, guid: 173aa8e49c2b1f2449db744b35a2951b, type: 2}
     VerticalOffset: 0
   - name: Water
-    tileVisualPrefab: {fileID: 1596880890996130, guid: 794e26db15ca11b46b3b0a69cc5648f9,
-      type: 2}
+    tileVisualPrefabs:
+    - {fileID: 1596880890996130, guid: 794e26db15ca11b46b3b0a69cc5648f9, type: 2}
     BaseMaterial: {fileID: 2100000, guid: c3fe599ba302e56429443df4a51f3147, type: 2}
     SelectedMaterial: {fileID: 2100000, guid: ec2644e2324e7ca418357337ed9ce370, type: 2}
     VerticalOffset: 0
   - name: HighBox
-    tileVisualPrefab: {fileID: 1541638353580306, guid: fe6426df4f0151c4d92c7ebd276a03c0,
-      type: 2}
+    tileVisualPrefabs:
+    - {fileID: 1541638353580306, guid: fe6426df4f0151c4d92c7ebd276a03c0, type: 2}
     BaseMaterial: {fileID: 2100000, guid: 99ded6655effd08429acda885eca9e9f, type: 2}
     SelectedMaterial: {fileID: 2100000, guid: 4f9614d42e3138342b4505c27d2043a2, type: 2}
     VerticalOffset: 0.25
@@ -1312,9 +1313,9 @@ MonoBehaviour:
         m_MethodName: DoMove
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1497792851114160, guid: c930fb9649c4ae245bfd0bc3b0fd6d98,
+          m_ObjectArgument: {fileID: 11400000, guid: 94d6c8bdbda37d44b9fbd0b1a6526c26,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: Ability, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2431,9 +2432,9 @@ MonoBehaviour:
         m_MethodName: DoMove
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1548032006213892, guid: 6d5b4f79af2094346972b2c3ad1ec8d1,
+          m_ObjectArgument: {fileID: 11400000, guid: 96ac30d68b23f414ab5e151bc7f35742,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: Ability, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2780,9 +2781,9 @@ MonoBehaviour:
         m_MethodName: DoMove
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1406261368000268, guid: 574e287dda4e59d43b595ce0c06220f8,
+          m_ObjectArgument: {fileID: 11400000, guid: 45a28d43290b646418a5f93ca335de78,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: Ability, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2903,9 +2904,9 @@ MonoBehaviour:
         m_MethodName: DoMove
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1739867893971094, guid: 6b7e7a3253eb6de4c9b63f9b1bca3d8c,
+          m_ObjectArgument: {fileID: 11400000, guid: dc8a828696acb6f41be5acf8a1336ed0,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: Ability, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3933,9 +3934,9 @@ MonoBehaviour:
         m_MethodName: DoMove
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1417682585369608, guid: e257a348a0b3b5a4cbd1c7e28d397e46,
+          m_ObjectArgument: {fileID: 11400000, guid: c6f6ea5e3460d00489c6446e3bd14802,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: Ability, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
